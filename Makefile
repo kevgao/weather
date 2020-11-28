@@ -32,7 +32,7 @@ glad.o: glad.c glad.h khrplatform.h
 #errcheck.o: errcheck.c CSCIx229.h
 #fatal.o: fatal.c CSCIx229.h
 axis.o: axis.cpp axis.h
-#landscape.o: landscape.cpp landscape.h
+landscape.o: landscape.cpp landscape.h
 #weather.o: weather.cpp weather.h
 
 #print.o: print.c CSCIx229.h
@@ -43,7 +43,7 @@ axis.o: axis.cpp axis.h
 	g++ -c $(CFLG) -std=c++11 $<
 
 #  Link
-project: project.o glad.o  axis.o #landscape.o weather.o
+project: project.o glad.o  axis.o landscape.o #weather.o
 	g++ -O3 -o $@ $^   $(LIBS) $(CFLG) -lglfw -framework OpenGL
 	rm -f *.o *.a
 

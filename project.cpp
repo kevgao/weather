@@ -9,25 +9,21 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-//#include <GLFW/glfw3.h>
 
-
-//#include <iostream>
+#include <iostream>
 #include <cmath>
 //using namespace std;
 
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f};
+
 
 GLuint WIDTH = 800, HEIGHT = 600;
 
 glm::mat4 model;
 glm::mat4 view;
 glm::mat4 projection;
+glm::mat4 axisModel;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.2f, -0.5f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, -1.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -39,8 +35,9 @@ int loop;
 GLfloat slowdown = 1.0;
 GLfloat zoom = 0.05f;
 
-Landscape *landscape;
+
 Axis *axis;
+Landscape *landscape;
 
 
 GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int comp = 24){
@@ -63,13 +60,16 @@ GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int
 
 
 
+
 void init(){
 
-    //model = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
-    //view = glm::lookAt(cameraPos, cameraPos+cameraFront, cameraUp);
-    //projection = glm::perspective(45.0f, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.1f, 200.0f);
+    model = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
+    view = glm::lookAt(cameraPos, cameraPos+cameraFront, cameraUp);
+    projection = glm::perspective(glm::radians(35.0f), (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.01f, 100.0f);
 
-	axis = new Axis(vertices);
+	axis = new Axis();
+    landscape = new Landscape();
+    axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
 
 	//landscape = new Landscape();
 
@@ -101,44 +101,42 @@ void init(){
 
 void render(){
 
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glLoadIdentity();
 
-	//landscape.render();
-	//drawAxis();
-	axis->render();
+	axis->render(projection, view, axisModel);
+    landscape->render(projection, view, model);
 
 
 }
 
+
 int main( int argc, char *argv[]){
 
-    //GLFW init
-    if (!glfwInit()){
-        return 0;
-    }
-
+    glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	#ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
-
-    // create window
+    // glfw window creation
+    // --------------------
     GLFWwindow* window = glfwCreateWindow(800, 600, "Weather System", NULL, NULL);
-    if (!window){
-        std::cout << "Failed to create window" << std::endl;
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        return 0;
+        return -1;
     }
-    
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    //glfwSetKeyCallback(window, key_callback);
-    //glfwSetCursorPosCallback(window, mouse_callback);
+    
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad
     if (! gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
@@ -146,17 +144,19 @@ int main( int argc, char *argv[]){
         return 0;
     }
 
-    int width, height;
-    glfwGetFramebufferSize(window,&width, &height);
+    //int width, height;
+    //glfwGetFramebufferSize(window,&width, &height);
     //glViewport(0,0,width, height);
 
     init();
+    //axis = new Axis(vertices, sizeof(vertices));
 
     while (!glfwWindowShouldClose(window)){
 
 
         //main render function
         render();
+        //axis->render();
 
         // swap buffer
         glfwSwapBuffers(window);
@@ -175,6 +175,8 @@ int main( int argc, char *argv[]){
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     glViewport(0,0,width,height);
 }
+
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode){
 
@@ -209,7 +211,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     cursorX = xpos;
     cursorY = ypos;
 
-    GLfloat sensitivity = 0.1;
+    GLfloat sensitivity = 0.05;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 

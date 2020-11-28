@@ -1,41 +1,35 @@
 #include "landscape.h"
 
-GLfloat Landscape::vertices[] = {
-    1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-    1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    };
 
-void Landscape::Landscape(){
 
-    // vertex shader
-    const char* vertexShaderSource = VERTEX_SHADER;
-    GLuint vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+Landscape::Landscape(){
 
     int success;
     char infoLog[512];
+
+    // vertex shader
+    GLuint vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &(this->landscapeVertexShaderSource), NULL);
+    glCompileShader(vertexShader);
+
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if(!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "error compiling vertex shader:" << infoLog << std::endl;
+        std::cout << "error compiling landscape vertex shader:" << infoLog << std::endl;
     }
 
     // fragment shader
 
-    const char* fragmentShaderSource = FRAGMENT_SHADER;
     GLuint fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &(this->landscapeFragmentShaderSource), NULL);
     glCompileShader(fragmentShader);
 
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if(!success){
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "error compiling fragment shader:" << infoLog << std::endl;
+        std::cout << "error compiling landscape fragment shader:" << infoLog << std::endl;
     }
 
     shaderProgram = glCreateProgram();
@@ -46,15 +40,21 @@ void Landscape::Landscape(){
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if(!success){
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "error linking program:" << infoLog << std::endl;
+        std::cout << "error linking landscape program:" << infoLog << std::endl;
     }
 
     //glUseProgram(shaderProgram);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &(this->VAO)); //TODO need to assign new id?
+    //std::cout << this->VAO << std::endl;
+    glGenBuffers(1, &(this->VBO)); //TODO need to assign new id?
+    //std::cout << this->VBO << std::endl;
+    glBindVertexArray(this->VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
     
     
     glGenBuffers(1, &VBO);
@@ -67,18 +67,12 @@ void Landscape::Landscape(){
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, 8*sizeof(float), (GLvoid*)(6*sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
-
-void Landscape::render(){
-
-    skybox();
-    land();
-    house();
-
-    
-}
-
+/*
 void Landscape::house(){
 
     glUseProgram(shaderProgram);
@@ -98,36 +92,38 @@ void Landscape::house(){
 
 
 }
+*/
 
-void Landscape::land(){
+void Landscape::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture[6]);
-    glPushMatrix();
-    glBegin(GL_QUAD_STRIP);
-    glColor3f(1,1,1);
-    glNormal3d(0,1,0);
-    glVertex3f(-0.8, 0, -1);
-    glTexCoord2f(0,0);
-    glVertex3f(0.8, 0, -1);
-    glTexCoord2f(1,0);
-    glVertex3f(-0.8, 0, 1);
-    glTexCoord2f(0,1);
-    glVertex3f(0.8, 0, 1);
-    glTexCoord2f(1,1);
-    std::cout << "landscape" << std::endl;
-    
-glEnd();
-glPopMatrix();
+    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    //glClear(GL_COLOR_BUFFER_BIT);
+
+    //std::cout << "rendering" << std::endl;
+    //std::cout << this->shaderProgram << std::endl;
+    glUseProgram(this->shaderProgram);
+
+    int projLoc = glGetUniformLocation(this->shaderProgram, "projection");
+    int viewLoc = glGetUniformLocation(this->shaderProgram, "view");
+    int modelLoc = glGetUniformLocation(this->shaderProgram, "model");
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+    glBindVertexArray(this->VAO);
+    glLineWidth(8);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // draw the land
+    //glDrawArrays(GL_LINE_LOOP,0,6);
 
 }
 
 
 
 
-void Landscape::skybox(float x, float y, float z, float box_width, float box_height,float box_length){
+void Landscape::skybox(){
     // draw sky
-	
+	/*
 	float width =  box_width;
 	float height = box_height;
 	float length =  box_length;
@@ -187,6 +183,7 @@ void Landscape::skybox(float x, float y, float z, float box_width, float box_hei
 	glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height,	z);
 	glEnd();
 
-    glPopMatrix();                 
+    glPopMatrix();       
+    */          
 
 }
