@@ -86,35 +86,9 @@ void init(){
     axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
     landModel = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
 
-	//landscape = new Landscape();
-
-	//generate textures
-	/*
-    texture[0] = loadTexture("image/sky_1.bmp", 10, 5, idepth);
-    texture[1] = loadTexture("image/sky_2.bmp", iwidth, iheight, idepth);
-    texture[2] = loadTexture("image/sky_3.bmp", iwidth, iheight, idepth);
-    texture[3] = loadTexture("image/sky_4.bmp", iwidth, iheight, idepth);
-    texture[4] = loadTexture("image/sky.bmp", iwidth, iheight, idepth);
-    texture[5] = loadTexture("Image/shu.bmp");
-	texture[6] = loadTexture("Image/shu1.bmp");
-	texture[7] = loadTexture("Image/tiao.bmp");
-	texture[8] = loadTexture("Image/door.bmp");
-	texture[9] = loadTexture("Image/star.bmp");
-	texture[10] = loadTexture("Image/shu1_1.bmp");
-	texture[11] = loadTexture("Image/shu1_2.bmp");
-	texture[12] = loadTexture("Image/shu2_1.bmp");
-	texture[13] = loadTexture("Image/shu2_2.bmp");
-	texture[14] = loadTexture("Image/cao_1.bmp");
-	texture[15] = loadTexture("Image/cao_2.bmp");
-	texture[16] = loadTexture("Image/fire.bmp");
-	texture[17] = loadTexture("Image/start_1.bmp");	
-	texture[18] = loadTexture("Image/start_2.bmp");
-	texture[19] = loadTexture("Image/Particle.bmp");
-	*/
-
 }
 
-void render(){
+void glRender(){
 
     //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,6 +102,68 @@ void render(){
     
     snow->render();
 
+
+}
+
+void guiRender(int window_w, int window_h){
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    
+
+    if(ImGui::BeginMainMenuBar()){
+        if(ImGui::BeginMenu("File")){
+            ImGui::MenuItem("Close", NULL);
+            ImGui::EndMenu();
+
+        }
+        if(ImGui::BeginMenu("Edit")){
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("View")){
+            ImGui::MenuItem("Reset View", NULL);
+            ImGui::EndMenu();
+        }
+        if(ImGui::BeginMenu("Weather")){
+            ImGui::EndMenu();
+        }
+        if(ImGui::BeginMenu("Help")){
+            ImGui::MenuItem("About", NULL);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+    int boxheight = 200;
+    int boxwidth = 80;
+    bool weather_is_snow = true;
+    bool weather_is_sunny = true;
+    bool time_is_day = true;
+    bool time_is_night = true;
+    std::cout << window_h << std::endl;
+    ImGui::SetNextWindowSize(ImVec2(boxwidth,boxheight), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(window_w-boxwidth,(window_h-boxheight)/2));
+    ImGuiWindowFlags flags = 0
+        | ImGuiWindowFlags_NoTitleBar
+        | ImGuiWindowFlags_NoScrollbar
+        | ImGuiWindowFlags_NoResize
+        ;
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1);
+    ImGui::Begin("change vertex", NULL, flags);
+    ImGui::PopStyleVar();
+    ImGui::Text("Time:");
+    ImGui::Checkbox("Day", &time_is_day);
+    ImGui::Checkbox("Night", &time_is_night);
+
+    ImGui::Text("Weather:");
+    ImGui::Checkbox("Sunny", &weather_is_sunny);
+    ImGui::Checkbox("Snow", &weather_is_snow);
+
+    ImGui::End();
+
+
+    ImGui::Render();
 
 }
 
@@ -176,34 +212,25 @@ int main( int argc, char *argv[]){
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 150");
 
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
 
     init();
+
+    int display_w, display_h;
+    int window_w, window_h;
     //axis = new Axis(vertices, sizeof(vertices));
 
     while (!glfwWindowShouldClose(window)){
         glfwPollEvents();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        
-        bool imgui = true;
-        if(!ImGui::Begin("change vertex", &imgui, ImGuiWindowFlags_MenuBar)){
-            std::cout << "imgui not begin" << std::endl;
-        };
-        ImGui::Button("Test Window");
-        ImGui::End();
-        
-        ImGui::Render();
 
-        
-
-        render();
-        // swap buffer
-        int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        //glClear(GL_COLOR_BUFFER_BIT);
+        glfwGetWindowSize(window, &window_w, &window_h);
+        
+        guiRender(window_w, window_h);
+        glRender();
+        
+        //glViewport(0, 0, display_w, display_h);
+        
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
 
