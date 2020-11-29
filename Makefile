@@ -33,6 +33,11 @@ glad.o: glad.c glad.h khrplatform.h
 #fatal.o: fatal.c CSCIx229.h
 axis.o: axis.cpp axis.h
 landscape.o: landscape.cpp landscape.h
+skybox.o: skybox.cpp skybox.h
+particles.o: particles.cpp particles.h
+imgui.o: imgui.cpp imgui.h
+imgui_impl_glfw.o: imgui_impl_glfw.cpp imgui_impl_glfw.h
+imgui_impl_opengl3.o: imgui_impl_opengl3.cpp imgui_impl_opengl3.h
 #weather.o: weather.cpp weather.h
 
 #print.o: print.c CSCIx229.h
@@ -43,7 +48,7 @@ landscape.o: landscape.cpp landscape.h
 	g++ -c $(CFLG) -std=c++11 $<
 
 #  Link
-project: project.o glad.o  axis.o landscape.o #weather.o
+project: project.o glad.o  axis.o landscape.o skybox.o particles.o imgui.o imgui_impl_glfw.o imgui_impl_opengl3.o
 	g++ -O3 -o $@ $^   $(LIBS) $(CFLG) -lglfw -framework OpenGL
 	rm -f *.o *.a
 

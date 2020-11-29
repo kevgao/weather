@@ -2,12 +2,18 @@
 #include "landscape.h"
 #include "weather.h"
 #include "axis.h"
+#include "skybox.h"
+#include "particles.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/string_cast.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 
 #include <iostream>
@@ -22,6 +28,7 @@ glm::mat4 model;
 glm::mat4 view;
 glm::mat4 projection;
 glm::mat4 axisModel;
+glm::mat4 landModel;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, -1.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -38,6 +45,8 @@ GLfloat zoom = 0.05f;
 
 Axis *axis;
 Landscape *landscape;
+Skybox *skybox;
+ParticleSystem *snow;
 
 
 GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int comp = 24){
@@ -63,13 +72,19 @@ GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int
 
 void init(){
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     model = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
     view = glm::lookAt(cameraPos, cameraPos+cameraFront, cameraUp);
     projection = glm::perspective(glm::radians(35.0f), (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.01f, 100.0f);
 
 	axis = new Axis();
     landscape = new Landscape();
+    skybox = new Skybox();
+    snow = new ParticleSystem();
     axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+    landModel = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
 
 	//landscape = new Landscape();
 
@@ -101,12 +116,17 @@ void init(){
 
 void render(){
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glLoadIdentity();
+	
+    skybox->render(projection, view, model);
+    
+    landscape->render(projection, view, landModel);
 
-	axis->render(projection, view, axisModel);
-    landscape->render(projection, view, model);
+    axis->render(projection, view, axisModel);
+    
+    snow->render();
 
 
 }
@@ -148,12 +168,23 @@ int main( int argc, char *argv[]){
     //glfwGetFramebufferSize(window,&width, &height);
     //glViewport(0,0,width, height);
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+
+    ImGui::StyleColorsLight();
+
     init();
     //axis = new Axis(vertices, sizeof(vertices));
 
     while (!glfwWindowShouldClose(window)){
 
-
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         //main render function
         render();
         //axis->render();

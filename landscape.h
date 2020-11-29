@@ -13,7 +13,9 @@ class Landscape{
     private:
     GLuint VAO;
     GLuint VBO;
+    GLuint EBO;
     GLuint shaderProgram;
+    unsigned int texture;
     void skybox();
     void land();
 
@@ -42,10 +44,14 @@ class Landscape{
         "}\0";
 
     GLfloat vertices[32] = {
-        10.0f, 0.0f, 10.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        10.0f, 0.0f, -10.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-        -10.0f, 0.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        -10.0f, 0.0f, 10.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-        };
+        0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        -0.5f, 0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
+    GLuint indices[6] = {
+        0, 1, 3,
+        1, 2, 3
+    };
 
 };
