@@ -30,7 +30,7 @@ list(APPEND MAIN_APP_INCLUDE_DIRS
     "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
 )
 
-set(NAME project)
+set(NAME weathersystem)
 add_executable(${NAME} ${MAIN_APP_SOURCES})
 target_include_directories(${NAME} PUBLIC ${MAIN_APP_INCLUDE_DIRS})
 target_link_libraries(${NAME} ${MAIN_APP_LIBRARIES})

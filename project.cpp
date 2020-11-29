@@ -11,10 +11,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
 #include <iostream>
 #include <cmath>
@@ -170,34 +170,48 @@ int main( int argc, char *argv[]){
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO(); 
+    (void)io;
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init();
+    ImGui_ImplOpenGL3_Init("#version 150");
 
-    ImGui::StyleColorsLight();
+    ImGui::StyleColorsDark();
 
     init();
     //axis = new Axis(vertices, sizeof(vertices));
 
     while (!glfwWindowShouldClose(window)){
-
+        glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        //main render function
-        render();
-        //axis->render();
+        
+        bool imgui = true;
+        if(!ImGui::Begin("change vertex", &imgui, ImGuiWindowFlags_MenuBar)){
+            std::cout << "imgui not begin" << std::endl;
+        };
+        ImGui::Button("Test Window");
+        ImGui::End();
+        
+        ImGui::Render();
 
+        
+
+        render();
         // swap buffer
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
 
         // events
-        glfwPollEvents();
+        
         
 
     }
-
     glfwTerminate();
 
     return 0;

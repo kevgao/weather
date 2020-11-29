@@ -34,10 +34,10 @@ class ParticleSystem{
     "layout (location = 1) in vec3 position;\n"
     "layout (location = 2) in vec3 velocity;\n"
     "layout (location = 3) in vec4 color;\n"
-    "layout (location = 4) in vec1 age;\n"
-    "layout (location = 5) in vec1 life;\n"
-    "layout (location = 6) in vec1 size;\n"
-    "out vec3 Color;\n"
+    "layout (location = 4) in float age;\n"
+    "layout (location = 5) in float life;\n"
+    "layout (location = 6) in float size;\n"
+    "out vec4 Color;\n"
     "uniform mat4 projection;\n"
     "uniform mat4 view;\n"
     "uniform mat4 model;\n"
@@ -47,11 +47,11 @@ class ParticleSystem{
     "   Color = color;\n"
     "}\0";
     const char *particleFragmentShaderSource = "#version 330 core\n"
-    "in vec3 Color;\n"
+    "in vec4 Color;\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(Color, 1.0f);\n"
+    "   FragColor = vec4(Color);\n"
     "}\n\0";
 
     GLfloat vertices[16] = {
