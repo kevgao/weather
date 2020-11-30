@@ -1,14 +1,14 @@
 #include "particles.h"
+#include "stb_image.h"
 #include <random>
 
 ParticleSystem::ParticleSystem(){
     
-    this->particleCount = 100;
+    this->particleCount = MAX_PARTICLE_COUNT;
 
-    
-
-    for(int i = 0; i<100; i++){
+    for(int i = 0; i<this->particleCount; i++){
         this->particles[i] = this->generateParticle();
+        //std::cout << this->particles[i].position.x << std::endl;
         
     };
 
@@ -62,10 +62,11 @@ ParticleSystem::ParticleSystem(){
     glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-
+    
     glGenBuffers(1, &(this->particleVBO));
     glBindBuffer(GL_ARRAY_BUFFER, this->particleVBO);
-    glBufferData(GL_ARRAY_BUFFER, this->particleCount * sizeof(Particle), this->particles, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->particleCount*sizeof(Particle), this->particles, GL_DYNAMIC_DRAW);
+
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
     glEnableVertexAttribArray(2);
@@ -87,7 +88,19 @@ ParticleSystem::ParticleSystem(){
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
 
+    
+
     glBindVertexArray(0);
+
+    unsigned char *image;
+    int width = 1348, height = 1172;
+    int nrChannels = 0;
+    image = stbi_load("image/xuehua.jpg", &width, &height, &nrChannels, 0);
+    glGenTextures(1,&(this->texture));
+    glBindTexture(GL_TEXTURE_2D, this->texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(image);
 
 }
 
@@ -95,21 +108,50 @@ Particle ParticleSystem::generateParticle(){
     Particle part;
     static std::default_random_engine engine{};
     static std::uniform_real_distribution<float> distribution{0.0, 1.0};
-    part.position = glm::vec3(distribution(engine), distribution(engine), 0.0);
+    static std::uniform_real_distribution<float> rdistribution{-1.0, 1.0};
+    part.position = glm::vec3(5*rdistribution(engine), 3*distribution(engine), 10*rdistribution(engine));
     part.color = glm::vec4(distribution(engine), distribution(engine), distribution(engine), 1.0);
-    part.velocity = glm::vec3(distribution(engine), distribution(engine), 0.0);
+    part.velocity = glm::vec3(0, -0.001f, 0.0);
     part.life = 10.0;
-    part.age = distribution(engine);
-    part.size = 1.0;
+    part.age = 1.0;
+    part.size = 0.01*(1.0+distribution(engine));
 
     return part;
 
 }
 
-void ParticleSystem::render(){
-    
-    glUseProgram(this->shaderProgram);
-    glBindVertexArray(this->VAO);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, this->particleCount);
+void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
 
+    glUseProgram(this->shaderProgram);
+
+    int projLoc = glGetUniformLocation(this->shaderProgram, "projection");
+    int viewLoc = glGetUniformLocation(this->shaderProgram, "view");
+    int modelLoc = glGetUniformLocation(this->shaderProgram, "model");
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+    glBindTexture(GL_TEXTURE_2D, this->texture);
+    this->update();
+    //std::cout << "landscape" << this->texture << std::endl;
+    glBindVertexArray(this->VAO);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
+    //glDrawArrays(GL_TRIANGLES, 0, 6);
+
+}
+
+void ParticleSystem::update(){
+
+    for(int i = 0; i<this->particleCount; i++){
+        this->particles[i].position+= this->particles[i].velocity;
+        if(this->particles[i].position.y<0.1){
+            this->particles[i].position.y=3.0;
+        }
+    }
+    
+    glBindBuffer(GL_ARRAY_BUFFER, this->particleVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, this->particleCount*sizeof(Particle), this->particles);
+
+    //std::cout << "updated." << std::endl;
 }

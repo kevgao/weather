@@ -99,7 +99,7 @@ void Landscape::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
     glBindTexture(GL_TEXTURE_2D, this->texture);
     //std::cout << "landscape" << this->texture << std::endl;
     glBindVertexArray(this->VAO);
-    glLineWidth(8);
+    //glLineWidth(8);
     //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // draw the land
     //glDrawArrays(GL_LINE_LOOP,0,6);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

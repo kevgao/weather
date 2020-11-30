@@ -35,6 +35,7 @@ axis.o: axis.cpp axis.h
 landscape.o: landscape.cpp landscape.h
 skybox.o: skybox.cpp skybox.h
 particles.o: particles.cpp particles.h
+grass.o: grass.cpp grass.h
 imgui.o: imgui.cpp imgui.h
 imgui_impl_glfw.o: imgui_impl_glfw.cpp imgui_impl_glfw.h
 imgui_impl_opengl3.o: imgui_impl_opengl3.cpp imgui_impl_opengl3.h
@@ -51,7 +52,7 @@ imgui_widgets.o: imgui_widgets.cpp
 	g++ -c $(CFLG) -std=c++11 $<
 
 #  Link
-project: project.o glad.o  axis.o landscape.o skybox.o particles.o imgui.o imgui_impl_glfw.o imgui_impl_opengl3.o imgui_demo.o imgui_draw.o imgui_widgets.o
+project: project.o glad.o  axis.o landscape.o skybox.o particles.o grass.o imgui.o imgui_impl_glfw.o imgui_impl_opengl3.o imgui_demo.o imgui_draw.o imgui_widgets.o
 	g++ -O3 -o $@ $^   $(LIBS) $(CFLG) -lglfw -framework OpenGL
 	rm -f *.o *.a
 

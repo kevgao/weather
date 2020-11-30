@@ -4,6 +4,7 @@
 #include "axis.h"
 #include "skybox.h"
 #include "particles.h"
+#include "grass.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -29,6 +30,7 @@ glm::mat4 view;
 glm::mat4 projection;
 glm::mat4 axisModel;
 glm::mat4 landModel;
+glm::mat4 particleModel;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, -1.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -47,6 +49,7 @@ Axis *axis;
 Landscape *landscape;
 Skybox *skybox;
 ParticleSystem *snow;
+Grass *grass;
 
 
 GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int comp = 24){
@@ -74,6 +77,15 @@ void init(){
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+    glEnable(GL_FOG);
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    glFogfv(GL_FOG_COLOR, fogColor);
+    glFogf(GL_FOG_DENSITY, 0.8);
+    glHint(GL_FOG_HINT, GL_NICEST);
+    glFogf(GL_FOG_START, 0.1);
+    glFogf(GL_FOG_END, 5);
+
 
     model = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f));
     view = glm::lookAt(cameraPos, cameraPos+cameraFront, cameraUp);
@@ -83,8 +95,10 @@ void init(){
     landscape = new Landscape();
     skybox = new Skybox();
     snow = new ParticleSystem();
+    grass = new Grass();
     axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
     landModel = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
+    particleModel = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
 }
 
@@ -100,7 +114,9 @@ void glRender(){
 
     axis->render(projection, view, axisModel);
     
-    snow->render();
+    snow->render(projection, view, particleModel);
+
+    grass->render(projection, view, model);
 
     
 
@@ -161,6 +177,8 @@ void guiRender(int window_w, int window_h){
     ImGui::Text("Weather:");
     ImGui::Checkbox("Sunny", &weather_is_sunny);
     ImGui::Checkbox("Snow", &weather_is_snow);
+    ImGui::Checkbox("Rain", &weather_is_snow);
+    ImGui::Checkbox("Hazel", &weather_is_snow);
 
     ImGui::End();
 
