@@ -102,6 +102,8 @@ void glRender(){
     
     snow->render();
 
+    
+
 
 }
 
@@ -141,7 +143,7 @@ void guiRender(int window_w, int window_h){
     bool weather_is_sunny = true;
     bool time_is_day = true;
     bool time_is_night = true;
-    std::cout << window_h << std::endl;
+    //std::cout << window_h << std::endl;
     ImGui::SetNextWindowSize(ImVec2(boxwidth,boxheight), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowPos(ImVec2(window_w-boxwidth,(window_h-boxheight)/2));
     ImGuiWindowFlags flags = 0

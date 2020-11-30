@@ -16,8 +16,7 @@ class Landscape{
     GLuint EBO;
     GLuint shaderProgram;
     unsigned int texture;
-    void skybox();
-    void land();
+    
 
     const char* landscapeVertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 position;\n"

@@ -70,7 +70,7 @@ Landscape::Landscape(){
     glBindVertexArray(0);
 
     unsigned char *image;
-    int width = 512, height = 512;
+    int width = 1024, height = 512;
     int nrChannels = 24;
     image = stbi_load("image/di.bmp", &width, &height, &nrChannels, 0);
     std::cout << sizeof(image) << std::endl;
