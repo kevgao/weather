@@ -6,13 +6,13 @@ Grass::Grass(){
     
     this->bladeCount = MAX_BLADE_COUNT;
 
-    std::cout << 10 << std::endl;
+    
 
     for(int i = 0; i<this->bladeCount; i++){
         this->blades[i] = this->generateBlade();
         
     };
-    std::cout << 11 << std::endl;
+    
     int success;
     char infoLog[512];
 
@@ -54,7 +54,7 @@ Grass::Grass(){
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    std::cout << 12 << std::endl;
+    
     glGenVertexArrays(1, &(this->VAO));
     glBindVertexArray(this->VAO);
 
@@ -63,21 +63,21 @@ Grass::Grass(){
     glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-    std::cout << 13 << std::endl;
+    
     glGenBuffers(1, &(this->bladeVBO));
     glBindBuffer(GL_ARRAY_BUFFER, this->bladeVBO);
     glBufferData(GL_ARRAY_BUFFER, this->bladeCount*sizeof(Blade), this->blades, GL_DYNAMIC_DRAW);
-    std::cout << 14 << std::endl;
+    
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Blade), (void*)0);
-    std::cout << 15 << std::endl;
+    
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Blade), (void*)(3*sizeof(float)));
-    std::cout << 16 << std::endl;
+    
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
-    std::cout << 17 << std::endl;
+    
     
 
     
@@ -93,7 +93,6 @@ Grass::Grass(){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(image);
-    std::cout << 18 << std::endl;
 
 }
 
@@ -113,27 +112,25 @@ void Grass::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
 
     glUseProgram(this->shaderProgram);
 
-    std::cout << 1 << std::endl;
-
     int projLoc = glGetUniformLocation(this->shaderProgram, "projection");
     int viewLoc = glGetUniformLocation(this->shaderProgram, "view");
     int modelLoc = glGetUniformLocation(this->shaderProgram, "model");
-    std::cout << 2 << std::endl;
+    
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindTexture(GL_TEXTURE_2D, this->texture);
 
-    std::cout << 3 << std::endl;
+    
 
     this->update();
-    std::cout << 4 << std::endl;
+    
     //std::cout << "landscape" << this->texture << std::endl;
     glBindVertexArray(this->VAO);
-    std::cout << 5 << std::endl;
+    
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, this->bladeCount);
-    std::cout << 6 << std::endl;
+    
     //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 }

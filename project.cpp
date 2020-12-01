@@ -51,6 +51,11 @@ Skybox *skybox;
 ParticleSystem *snow;
 Grass *grass;
 
+int weather = 0;
+int daytime = 0;
+glm::vec3 wind = glm::vec3(0.0, 0.0, 0.0);
+
+
 
 GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int comp = 24){
     
@@ -113,8 +118,9 @@ void glRender(){
     landscape->render(projection, view, landModel);
 
     axis->render(projection, view, axisModel);
-    
-    snow->render(projection, view, particleModel);
+    if(weather == 1){
+        snow->render(projection, view, particleModel);
+    }
 
     grass->render(projection, view, model);
 
@@ -155,10 +161,6 @@ void guiRender(int window_w, int window_h){
     }
     int boxheight = 200;
     int boxwidth = 80;
-    bool weather_is_snow = true;
-    bool weather_is_sunny = true;
-    bool time_is_day = true;
-    bool time_is_night = true;
     //std::cout << window_h << std::endl;
     ImGui::SetNextWindowSize(ImVec2(boxwidth,boxheight), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowPos(ImVec2(window_w-boxwidth,(window_h-boxheight)/2));
@@ -170,15 +172,21 @@ void guiRender(int window_w, int window_h){
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1);
     ImGui::Begin("change vertex", NULL, flags);
     ImGui::PopStyleVar();
+
+
     ImGui::Text("Time:");
-    ImGui::Checkbox("Day", &time_is_day);
-    ImGui::Checkbox("Night", &time_is_night);
+    ImGui::RadioButton("Day", &daytime, 0);
+    ImGui::RadioButton("Night", &daytime, 1);
+    ImGui::RadioButton("Auto", &daytime, 2);
 
     ImGui::Text("Weather:");
-    ImGui::Checkbox("Sunny", &weather_is_sunny);
-    ImGui::Checkbox("Snow", &weather_is_snow);
-    ImGui::Checkbox("Rain", &weather_is_snow);
-    ImGui::Checkbox("Hazel", &weather_is_snow);
+    
+    ImGui::RadioButton("Sunny", &weather, 0);
+    ImGui::RadioButton("Snow", &weather, 1);
+    ImGui::RadioButton("Rain", &weather, 2);
+    ImGui::RadioButton("Hazel", &weather,3);
+
+    std::cout << weather << std::endl;
 
     ImGui::End();
 

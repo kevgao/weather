@@ -68,8 +68,10 @@ Skybox::Skybox(){
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
     //glBindTexture(GL_TEXTURE_2D, this->texture);
     char* skybox_images[6] = {"image/right.jpg", "image/left.jpg", "image/top.jpg", "image/bottom.jpg", "image/front.jpg", "image/back.jpg"};
+    //char* skybox_images[6] = {"image/skybox/right.png", "image/skybox/left.png", "image/skybox/top.png", "image/skybox/bottom.png", "image/skybox/front.png", "image/skybox/back.png"};
     
     for(int i = 0; i<6; i++){
+        //stbi_set_flip_vertically_on_load(false);
         image = stbi_load(skybox_images[i], &width, &height, &nrChannels, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     }
