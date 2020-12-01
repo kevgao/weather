@@ -88,7 +88,7 @@ Grass::Grass(){
     int width = 1024, height = 1024;
     int nrChannels = 0;
     stbi_set_flip_vertically_on_load(true);
-    image = stbi_load("image/sky.bmp", &width, &height, &nrChannels, 0);
+    image = stbi_load("image/grass1.png", &width, &height, &nrChannels, 0);
     glGenTextures(1,&(this->texture));
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);

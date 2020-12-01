@@ -19,10 +19,10 @@ typedef struct{
 class ParticleSystem{
     public:
     ParticleSystem();
-    void init();
-    void update();
-    void simulate();
-    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+    
+    void update(int daytime, int weather);
+    
+    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather);
 
     private:
     GLint particleCount;
@@ -30,7 +30,8 @@ class ParticleSystem{
     GLuint VAO;
     GLuint vertexVBO;
     GLuint particleVBO;
-    GLuint texture;
+    GLuint snow_texture;
+    GLuint rain_texture;
 
     const char *particleVertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -62,7 +63,8 @@ class ParticleSystem{
     //"   fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
     "   vec4 texColor = texture(tex, textCoord);\n"
     "   if(texColor.r > 0.9)discard;\n"
-    "   fragColor = vec4(1.0f, 1.0f, 1.0f, texColor.a);\n"
+    //"   fragColor = vec4(1.0f, 1.0f, 1.0f, texColor.a);\n"
+    "   fragColor = texColor;\n"
     //"   fragColor = texture(tex, gl_PointCoord);\n"
 
     "}\n\0";

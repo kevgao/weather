@@ -85,13 +85,37 @@ Skybox::Skybox(){
     
     stbi_image_free(image);
 
+    width = 2048;
+    height = 2048;
+    nrChannels = 0;
+    glGenTextures(1,&(this->night_texture));
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->night_texture);
+    //glBindTexture(GL_TEXTURE_2D, this->texture);
+    char* night_skybox_images[6] = {"image/night/right.png", "image/night/left.png", "image/night/top.png", "image/night/bottom.png", "image/night/front.png", "image/night/back.png"};
+    //char* skybox_images[6] = {"image/skybox/right.png", "image/skybox/left.png", "image/skybox/top.png", "image/skybox/bottom.png", "image/skybox/front.png", "image/skybox/back.png"};
+    
+    for(int i = 0; i<6; i++){
+        //stbi_set_flip_vertically_on_load(false);
+        image = stbi_load(night_skybox_images[i], &width, &height, &nrChannels, 0);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    }
+    
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    
+    stbi_image_free(image);
+
     
     
 
 
 }
 
-void Skybox::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
+void Skybox::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather){
 
     //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
@@ -115,7 +139,12 @@ void Skybox::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
     
     //glActiveTexture(GL_TEXTURE1);
     //std::cout << this->texture << std::endl;
-    glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
+    if(daytime == 0){
+        glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
+    }else{
+        glBindTexture(GL_TEXTURE_CUBE_MAP, this->night_texture);
+    }
+    
     //glBindTexture(GL_TEXTURE_2D, this->texture);
     glBindVertexArray(this->VAO);
     //this->cubemap->bind(GL_TEXTURE0);

@@ -9,13 +9,14 @@
 class Skybox{
     public:
     Skybox();
-    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather);
 
     private:
     GLuint VBO;
     GLuint VAO;
     int shaderProgram;
     unsigned int texture;
+    unsigned int night_texture;
 
     const char *skyboxVertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 position;\n"

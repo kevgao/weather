@@ -96,8 +96,19 @@ ParticleSystem::ParticleSystem(){
     int width = 1348, height = 1172;
     int nrChannels = 0;
     image = stbi_load("image/xuehua.jpg", &width, &height, &nrChannels, 0);
-    glGenTextures(1,&(this->texture));
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    glGenTextures(1,&(this->snow_texture));
+    glBindTexture(GL_TEXTURE_2D, this->snow_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(image);
+
+    width = 360;
+    height = 386;
+    nrChannels = 0;
+    stbi_set_flip_vertically_on_load(true);
+    image = stbi_load("image/raindrop2.png", &width, &height, &nrChannels, 0);
+    glGenTextures(1,&(this->rain_texture));
+    glBindTexture(GL_TEXTURE_2D, this->rain_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(image);
@@ -111,7 +122,7 @@ Particle ParticleSystem::generateParticle(){
     static std::uniform_real_distribution<float> rdistribution{-1.0, 1.0};
     part.position = glm::vec3(5*rdistribution(engine), 3*distribution(engine), 10*rdistribution(engine));
     part.color = glm::vec4(distribution(engine), distribution(engine), distribution(engine), 1.0);
-    part.velocity = glm::vec3(0, -0.001f, 0.0);
+    part.velocity = glm::vec3(0, -0.002f, 0.0);
     part.life = 10.0;
     part.age = 1.0;
     part.size = 0.01*(1.0+distribution(engine));
@@ -120,7 +131,7 @@ Particle ParticleSystem::generateParticle(){
 
 }
 
-void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
+void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather){
 
     glUseProgram(this->shaderProgram);
 
@@ -132,19 +143,34 @@ void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 mode
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-    glBindTexture(GL_TEXTURE_2D, this->texture);
-    this->update();
+    if(weather == 1){
+        glBindTexture(GL_TEXTURE_2D, this->snow_texture);
+        this->update(daytime, weather);
+        glBindVertexArray(this->VAO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
+    }else if(weather == 2){
+        glBindTexture(GL_TEXTURE_2D, this->rain_texture);
+        this->update(daytime, weather);
+        glBindVertexArray(this->VAO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
+    }
+    
+    
     //std::cout << "landscape" << this->texture << std::endl;
-    glBindVertexArray(this->VAO);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
+    
     //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 }
 
-void ParticleSystem::update(){
+void ParticleSystem::update(int daytime, int weather){
 
     for(int i = 0; i<this->particleCount; i++){
-        this->particles[i].position+= this->particles[i].velocity;
+        if(weather == 1){
+            this->particles[i].position+= this->particles[i].velocity;
+        }else if(weather == 2){
+            this->particles[i].position+= glm::vec3(1.0, 10.0, 1.0)*this->particles[i].velocity;
+        }
+        
         if(this->particles[i].position.y<0.1){
             this->particles[i].position.y=3.0;
         }

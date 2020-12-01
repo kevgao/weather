@@ -113,14 +113,12 @@ void glRender(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glLoadIdentity();
 	
-    skybox->render(projection, view, model);
+    skybox->render(projection, view, model, daytime, weather);
     
     landscape->render(projection, view, landModel, daytime, weather);
 
     axis->render(projection, view, axisModel);
-    if(weather == 1){
-        snow->render(projection, view, particleModel);
-    }
+    snow->render(projection, view, particleModel, daytime, weather);
 
     grass->render(projection, view, model);
 
@@ -177,16 +175,16 @@ void guiRender(int window_w, int window_h){
     ImGui::Text("Time:");
     ImGui::RadioButton("Day", &daytime, 0);
     ImGui::RadioButton("Night", &daytime, 1);
-    ImGui::RadioButton("Auto", &daytime, 2);
+    //ImGui::RadioButton("Auto", &daytime, 2);
+
+    ImGui::NewLine();
 
     ImGui::Text("Weather:");
     
     ImGui::RadioButton("Sunny", &weather, 0);
     ImGui::RadioButton("Snow", &weather, 1);
     ImGui::RadioButton("Rain", &weather, 2);
-    ImGui::RadioButton("Hazel", &weather,3);
-
-    std::cout << weather << std::endl;
+    //ImGui::RadioButton("Hazel", &weather,3);
 
     ImGui::End();
 
