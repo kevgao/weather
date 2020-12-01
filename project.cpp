@@ -1,6 +1,5 @@
 #include "project.h"
 #include "landscape.h"
-#include "weather.h"
 #include "axis.h"
 #include "skybox.h"
 #include "particles.h"
@@ -74,8 +73,6 @@ GLuint loadTexture(std::string filename, int width = 1024, int height = 512, int
     return tex;
 
 }
-
-
 
 
 void init(){
