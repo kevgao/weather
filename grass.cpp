@@ -85,9 +85,10 @@ Grass::Grass(){
     glBindVertexArray(0);
 
     unsigned char *image;
-    int width = 93, height = 94;
+    int width = 1024, height = 1024;
     int nrChannels = 0;
-    image = stbi_load("image/grass.png", &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true);
+    image = stbi_load("image/sky.bmp", &width, &height, &nrChannels, 0);
     glGenTextures(1,&(this->texture));
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -129,7 +130,7 @@ void Grass::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
     //std::cout << "landscape" << this->texture << std::endl;
     glBindVertexArray(this->VAO);
     
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 3, this->bladeCount);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->bladeCount);
     
     //glDrawArrays(GL_TRIANGLES, 0, 6);
 

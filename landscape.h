@@ -8,14 +8,15 @@
 class Landscape{
     public:
     Landscape();
-    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather);
 
     private:
     GLuint VAO;
     GLuint VBO;
     GLuint EBO;
     GLuint shaderProgram;
-    unsigned int texture;
+    unsigned int grass_texture;
+    unsigned int snow_texture;
     
 
     const char* landscapeVertexShaderSource = "#version 330 core\n"

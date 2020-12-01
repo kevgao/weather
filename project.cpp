@@ -102,7 +102,7 @@ void init(){
     snow = new ParticleSystem();
     grass = new Grass();
     axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-    landModel = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
+    landModel = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
     particleModel = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
 }
@@ -115,7 +115,7 @@ void glRender(){
 	
     skybox->render(projection, view, model);
     
-    landscape->render(projection, view, landModel);
+    landscape->render(projection, view, landModel, daytime, weather);
 
     axis->render(projection, view, axisModel);
     if(weather == 1){

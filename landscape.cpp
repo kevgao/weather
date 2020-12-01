@@ -70,19 +70,27 @@ Landscape::Landscape(){
     glBindVertexArray(0);
 
     unsigned char *image;
-    int width = 1024, height = 512;
-    int nrChannels = 24;
-    image = stbi_load("image/di.bmp", &width, &height, &nrChannels, 0);
-    std::cout << sizeof(image) << std::endl;
-    glGenTextures(1,&(this->texture));
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    int width = 2048, height = 2048;
+    int nrChannels = 0;
+
+    image = stbi_load("image/grassland.jpg", &width, &height, &nrChannels, 0);
+    glGenTextures(1,&(this->grass_texture));
+    glBindTexture(GL_TEXTURE_2D, this->grass_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(image);
+
+    image = stbi_load("image/snowland.jpg", &width, &height, &nrChannels, 0);
+    
+    glGenTextures(1,&(this->snow_texture));
+    glBindTexture(GL_TEXTURE_2D, this->snow_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(image);
 }
 
 
-void Landscape::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
+void Landscape::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather){
 
     //std::cout << "rendering" << std::endl;
     //std::cout << this->shaderProgram << std::endl;
@@ -96,7 +104,12 @@ void Landscape::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model){
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    if(weather == 1){
+        glBindTexture(GL_TEXTURE_2D, this->snow_texture);
+    }else{
+        glBindTexture(GL_TEXTURE_2D, this->grass_texture);
+    }
+    
     //std::cout << "landscape" << this->texture << std::endl;
     glBindVertexArray(this->VAO);
     //glLineWidth(8);
