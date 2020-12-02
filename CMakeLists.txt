@@ -2,35 +2,68 @@ cmake_minimum_required(VERSION 3.6)
 
 project(weathersystem)
 
-include_directories("{CMAKE_SOURCE_DIR}/imgui")
-include_directories("{CMAKE_SOURCE_DIR}/glm")
-include_directories("{CMAKE_SOURCE_DIR}/image")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(GLAD "glad.h" "glad.c")
+# glfw 
+find_package(glfw3 3.3 REQUIRED)
 
-list(APPEND MAIN_APP_SOURCES
-    project.h
-    project.cpp
-    glad.c
-    glad.h
-    khrplatform.h
-    imgui/imgui_impl_opengl3.h
-    imgui/imgui_impl_opengl3.cpp
-    imgui/imgui_impl_glfw.h
-    imgui/imgui_impl_glfw.cpp
+# glad
+add_library(glad STATIC
+    lib/glad/glad.c
 )
 
-set(MAIN_APP_LIBRARIES)
-    imgui
-    glfw
+# imgui
+add_library(imgui STATIC
+    lib/imgui/imgui.cpp
+    lib/imgui/imgui_draw.cpp
+    lib/imgui/imgui_impl_glfw.cpp
+    lib/imgui/imgui_impl_opengl3.cpp
+    lib/imgui/imgui_widgets.cpp
+    lib/imgui/imgui.cpp
+)
+target_include_directories(imgui
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/lib
+)
+target_link_libraries(imgui glfw glad)
+
+
+# glm
+add_library(glm INTERFACE) #using INTERFACE to generate header file only libraries
+target_include_directories(glm INTERFACE lib/glm/)
+
+# stbi_image
+add_library(stbi_image INTERFACE)
+target_include_directories(stbi_image INTERFACE lib/stbi/)
+
+# main program
+set(SOURCES
+    src/axis.cpp
+    src/grass.cpp
+    src/project.cpp
+    src/landscape.cpp
+    src/particles.cpp
+    src/project.cpp
+    src/skybox.cpp
 )
 
-list(APPEND MAIN_APP_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/lib
 )
 
-set(NAME weathersystem)
-add_executable(${NAME} ${MAIN_APP_SOURCES})
-target_include_directories(${NAME} PUBLIC ${MAIN_APP_INCLUDE_DIRS})
-target_link_libraries(${NAME} ${MAIN_APP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        glfw
+        imgui
+        glad
+        glm
+        stbi_image
+)
+
+# Resources
+file(COPY image DESTINATION ${CMAKE_BINARY_DIR})
