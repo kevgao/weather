@@ -20,9 +20,9 @@ class ParticleSystem{
     public:
     ParticleSystem();
     
-    void update(int daytime, int weather);
+    void update(int daytime, int weather, bool show_wind);
     
-    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather);
+    void render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather, bool show_wind);
 
     private:
     GLint particleCount;

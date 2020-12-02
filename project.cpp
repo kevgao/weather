@@ -31,8 +31,8 @@ glm::mat4 axisModel;
 glm::mat4 landModel;
 glm::mat4 particleModel;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, -1.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 cameraPos = glm::vec3(0.5f, 0.5f, 2.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 GLboolean firstMouse = true;
@@ -50,8 +50,11 @@ Skybox *skybox;
 ParticleSystem *snow;
 Grass *grass;
 
-int weather = 0;
+int weather = 1;
 int daytime = 0;
+bool show_axis = false;
+bool show_wind = true;
+float wind_strength = 0.0;
 glm::vec3 wind = glm::vec3(0.0, 0.0, 0.0);
 
 
@@ -99,7 +102,7 @@ void init(){
     snow = new ParticleSystem();
     grass = new Grass();
     axisModel = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-    landModel = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
+    landModel = glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
     particleModel = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
 }
@@ -114,10 +117,13 @@ void glRender(){
     
     landscape->render(projection, view, landModel, daytime, weather);
 
-    axis->render(projection, view, axisModel);
-    snow->render(projection, view, particleModel, daytime, weather);
+    
+    snow->render(projection, view, particleModel, daytime, weather, show_wind);
+    if(show_axis){
+        axis->render(projection, view, axisModel);
+    }
 
-    grass->render(projection, view, model);
+    //grass->render(projection, view, model);
 
     
 
@@ -154,7 +160,7 @@ void guiRender(int window_w, int window_h){
         }
         ImGui::EndMainMenuBar();
     }
-    int boxheight = 200;
+    int boxheight = 260;
     int boxwidth = 80;
     //std::cout << window_h << std::endl;
     ImGui::SetNextWindowSize(ImVec2(boxwidth,boxheight), ImGuiCond_FirstUseEver);
@@ -182,6 +188,16 @@ void guiRender(int window_w, int window_h){
     ImGui::RadioButton("Snow", &weather, 1);
     ImGui::RadioButton("Rain", &weather, 2);
     //ImGui::RadioButton("Hazel", &weather,3);
+    /*
+    ImGui::Text("Wind:");
+    ImGui::DragFloat(NULL, &wind_strength, 0.1f, 0.0f, 1.0f, "%.1f");
+    std::cout << wind_strength << std::endl;
+    */
+    ImGui::NewLine();
+    ImGui::Checkbox("Wind", &show_wind);
+    ImGui::Checkbox("Axis", &show_axis);
+
+    
 
     ImGui::End();
 

@@ -131,7 +131,7 @@ Particle ParticleSystem::generateParticle(){
 
 }
 
-void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather){
+void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 model, int daytime, int weather, bool show_wind){
 
     glUseProgram(this->shaderProgram);
 
@@ -145,12 +145,12 @@ void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 mode
 
     if(weather == 1){
         glBindTexture(GL_TEXTURE_2D, this->snow_texture);
-        this->update(daytime, weather);
+        this->update(daytime, weather, show_wind);
         glBindVertexArray(this->VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
     }else if(weather == 2){
         glBindTexture(GL_TEXTURE_2D, this->rain_texture);
-        this->update(daytime, weather);
+        this->update(daytime, weather, show_wind);
         glBindVertexArray(this->VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, this->particleCount);
     }
@@ -162,17 +162,25 @@ void ParticleSystem::render(glm::mat4 projection, glm::mat4 view, glm::mat4 mode
 
 }
 
-void ParticleSystem::update(int daytime, int weather){
+void ParticleSystem::update(int daytime, int weather, bool show_wind){
 
+    static std::default_random_engine engine{};
+    static std::uniform_real_distribution<float> distribution{0.0, 1.0};
+    static std::uniform_real_distribution<float> rdistribution{-1.0, 1.0};
+    
     for(int i = 0; i<this->particleCount; i++){
         if(weather == 1){
             this->particles[i].position+= this->particles[i].velocity;
         }else if(weather == 2){
             this->particles[i].position+= glm::vec3(1.0, 10.0, 1.0)*this->particles[i].velocity;
         }
+
+        if(show_wind){
+            this->particles[i].position+=glm::vec3(-0.002f, 0.0f, 0.002f);
+        }
         
-        if(this->particles[i].position.y<0.1){
-            this->particles[i].position.y=3.0;
+        if(this->particles[i].position.y<-0.5){
+            this->particles[i].position = glm::vec3(5*rdistribution(engine), 3*distribution(engine), 10*rdistribution(engine));
         }
     }
     
