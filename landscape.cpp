@@ -7,7 +7,7 @@ Landscape::Landscape(){
     this->generateIndex();
     this->terrain();
     this->computeNormal();
-
+    /*
     for(int i=0; i<300; i++){
         std::cout << i << ":";
         for(int j=0; j<8; j++){
@@ -16,7 +16,7 @@ Landscape::Landscape(){
         std::cout << std::endl;
         
     }
-    /*
+    
     for(int i=0; i<(TERRIAN_WIDTH-1)*(TERRIAN_HEIGHT-1); i++){
         std::cout << i << ":";
         for(int j=0; j<6; j++){

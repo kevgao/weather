@@ -67,7 +67,7 @@ Skybox::Skybox(){
     glGenTextures(1,&(this->texture));
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
     //glBindTexture(GL_TEXTURE_2D, this->texture);
-    char* skybox_images[6] = {"image/right.jpg", "image/left.jpg", "image/top.jpg", "image/bottom.jpg", "image/front.jpg", "image/back.jpg"};
+    char const* skybox_images[6] = {"image/right.jpg", "image/left.jpg", "image/top.jpg", "image/bottom.jpg", "image/front.jpg", "image/back.jpg"};
     //char* skybox_images[6] = {"image/skybox/right.png", "image/skybox/left.png", "image/skybox/top.png", "image/skybox/bottom.png", "image/skybox/front.png", "image/skybox/back.png"};
     
     for(int i = 0; i<6; i++){
@@ -91,7 +91,7 @@ Skybox::Skybox(){
     glGenTextures(1,&(this->night_texture));
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->night_texture);
     //glBindTexture(GL_TEXTURE_2D, this->texture);
-    char* night_skybox_images[6] = {"image/night/right.png", "image/night/left.png", "image/night/top.png", "image/night/bottom.png", "image/night/front.png", "image/night/back.png"};
+    char const* night_skybox_images[6] = {"image/night/right.png", "image/night/left.png", "image/night/top.png", "image/night/bottom.png", "image/night/front.png", "image/night/back.png"};
     //char* skybox_images[6] = {"image/skybox/right.png", "image/skybox/left.png", "image/skybox/top.png", "image/skybox/bottom.png", "image/skybox/front.png", "image/skybox/back.png"};
     
     for(int i = 0; i<6; i++){
