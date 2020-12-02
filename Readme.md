@@ -19,9 +19,11 @@ A simulation of different weathers using OpenGl.
     ```
     
 
-## Compile ##
-    1. Install glfw and reflect its directory in Makefile (might be tricky but works on my mac)
-    2. run make
+## Compile and Run ##
+    1. Install glfw
+       (You might need to modify the glfw directory in makefile if compile on macos)
+    2. make
+    3. ./project
 
 ## Interaction ##
     * W/A/S/D to navigate through the landscape
