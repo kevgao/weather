@@ -152,6 +152,10 @@ void guiRender(int window_w, int window_h){
             ImGui::EndMenu();
         }
         if(ImGui::BeginMenu("Weather")){
+            ImGui::MenuItem("Sunny", NULL);
+            ImGui::MenuItem("Snow", NULL);
+            ImGui::MenuItem("Rain", NULL);
+
             ImGui::EndMenu();
         }
         if(ImGui::BeginMenu("Help")){
