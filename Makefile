@@ -52,7 +52,7 @@ imgui_widgets.o: imgui_widgets.cpp
 	g++ -c $(CFLG) -std=c++11 $<
 
 #  Link
-project: project.o glad.o  axis.o landscape.o skybox.o particles.o grass.o imgui.o imgui_impl_glfw.o imgui_impl_opengl3.o imgui_demo.o imgui_draw.o imgui_widgets.o
+project: project.o glad.o  axis.o landscape.o skybox.o particles.o grass.o imgui.o imgui_impl_glfw.o imgui_impl_opengl3.o imgui_draw.o imgui_widgets.o
 	g++ -O3 -o $@ $^   $(LIBS) $(CFLG) -lglfw -framework OpenGL
 	rm -f *.o *.a
 
