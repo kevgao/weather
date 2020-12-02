@@ -19,7 +19,7 @@ LFLG = -lglfw -framework OpenGL
 #  Linux/Unix/Solaris
 else
 CFLG=-O3 -Wall
-LIBS=-lglfw -lGLU -lGL -lm -dl
+LIBS=-lglfw -lGLU -lGL -lm -dl -ldl
 endif
 #  OSX/Linux/Unix/Solaris
 CLEAN=rm -f *.o *.a
